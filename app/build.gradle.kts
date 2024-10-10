@@ -54,7 +54,12 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // fragment
     implementation("androidx.fragment:fragment-ktx:1.3.0")
 
+    // indicator
     implementation ("me.relex:circleindicator:2.1.6")
+
+    // gson
+    implementation("com.google.code.gson:gson:2.9.0")
 }
