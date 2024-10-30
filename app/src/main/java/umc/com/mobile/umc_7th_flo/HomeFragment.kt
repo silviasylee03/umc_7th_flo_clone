@@ -73,6 +73,12 @@ class HomeFragment : Fragment() {
             }
         })
 
+        albumRVAdapter.setMiniPlayerSyncListener(object: AlbumRVAdapter.MiniPlayerSyncListener {
+            override fun onPlayButtonClick(album: Album) {
+                (context as MainActivity).updateMiniPlayer(album)
+            }
+        })
+
         // banner viewPager
         val bannerAdapter = BannerVPAdapter(this)
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))

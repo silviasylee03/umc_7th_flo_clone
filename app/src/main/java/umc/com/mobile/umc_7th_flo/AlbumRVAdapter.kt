@@ -29,9 +29,23 @@ class AlbumRVAdapter(private val albumList: ArrayList<Album>):
         holder.itemView.setOnClickListener {
             mItemClickListener.onItemClick(albumList[position])
         }
+
+        holder.binding.itemAlbumPlayImgIv.setOnClickListener {
+            miniPlayerSyncListener.onPlayButtonClick(albumList[position])
+        }
     }
 
     override fun getItemCount(): Int = albumList.size
+
+    interface MiniPlayerSyncListener {
+        fun onPlayButtonClick(album: Album)
+    }
+
+    private lateinit var miniPlayerSyncListener: MiniPlayerSyncListener
+
+    fun setMiniPlayerSyncListener(listener: MiniPlayerSyncListener) {
+        miniPlayerSyncListener = listener
+    }
 
     inner class ViewHolder(val binding: ItemAlbumBinding): RecyclerView.ViewHolder(binding.root) {
         fun bind(album: Album) {
