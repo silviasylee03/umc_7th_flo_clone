@@ -1,14 +1,10 @@
 package umc.com.mobile.umc_7th_flo
 
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.flo.Song
 import umc.com.mobile.umc_7th_flo.databinding.ActivitySongBinding
-import java.util.Timer
 
 class SongActivity : AppCompatActivity() {
 
@@ -50,6 +46,7 @@ class SongActivity : AppCompatActivity() {
             song = Song(
                 intent.getStringExtra("title")!!,
                 intent.getStringExtra("singer")!!,
+                intent.getIntExtra("coverImg", 0),
                 intent.getIntExtra("second", 0),
                 intent.getIntExtra("playTime", 0),
                 intent.getBooleanExtra("isPlaying", false)
