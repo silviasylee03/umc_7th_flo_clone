@@ -17,6 +17,8 @@ class AlbumFragment : Fragment() {
     lateinit var binding: FragmentAlbumBinding
     private val information = arrayListOf("수록곡", "상세정보", "영상")
 
+    private var isLiked: Boolean = false
+
     private var gson: Gson = Gson()
 
     override fun onCreateView(
@@ -31,6 +33,7 @@ class AlbumFragment : Fragment() {
 
         val albumJson = arguments?.getString("album")
         val album = gson.fromJson(albumJson, Album::class.java)
+
         setInit(album)
 
         binding.albumBackIv.setOnClickListener {
@@ -38,6 +41,18 @@ class AlbumFragment : Fragment() {
                 .replace(R.id.main_frm, HomeFragment())
                 .commitAllowingStateLoss()
         }
+
+//        binding.albumLikeIv.setOnClickListener {
+//            if(isLiked) {
+//                binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_off)
+//                disLikeAlbum(userId, album.id)
+//            } else {
+//                binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
+//                likeAlbum(userId, album.id)
+//            }
+//
+//            isLiked = !isLiked
+//        }
 
         val albumAdapter = AlbumVPAdapter(this)
         binding.albumContentVp.adapter = albumAdapter
@@ -53,5 +68,12 @@ class AlbumFragment : Fragment() {
         binding.albumAlbumIv.setImageResource(album.coverImg!!)
         binding.albumMusicTitleTv.text = album.title.toString()
         binding.albumSingerNameTv.text = album.singer.toString()
+
+        if(isLiked) {
+            binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
+        } else {
+            binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_off)
+        }
     }
+
 }

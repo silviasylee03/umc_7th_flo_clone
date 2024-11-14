@@ -1,63 +1,72 @@
 package umc.com.mobile.umc_7th_flo
 
+import android.annotation.SuppressLint
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import umc.com.mobile.umc_7th_flo.databinding.ItemSongBinding
 
-class SavedSongRVAdapter(private val songDatas: ArrayList<Song>) : RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
+class SavedSongRVAdapter() : RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
     private val switchStatus = SparseBooleanArray()
+    private val songs = ArrayList<Song>()
 
+    interface MyItemClickListener{
+        fun onRemoveSong(songId: Int)
+    }
+    private lateinit var  myItemClickListener: MyItemClickListener
+
+    fun setMyItemClickListener(itemClickListener: MyItemClickListener){
+        myItemClickListener = itemClickListener
+    }
     override fun onCreateViewHolder(
-        parent: ViewGroup,
+        viewGroup: ViewGroup,
         viewType: Int
-    ): SavedSongRVAdapter.ViewHolder {
-        val binding: ItemSongBinding = ItemSongBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+    ): ViewHolder {
+        val binding: ItemSongBinding = ItemSongBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup,false)
 
         return ViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SavedSongRVAdapter.ViewHolder, position: Int) {
-        holder.bind(songDatas[position])
-        holder.binding.itemSongMoreIv.setOnClickListener {
-            mItemClickListener.onRemoveSong(position)
-            songDatas.removeAt(position)
-            notifyDataSetChanged()
-        }
-        val switch =  holder.binding.switchRV
-        switch.isChecked = switchStatus[position]
-        switch.setOnClickListener {
-            if (switch.isChecked) {
-                switchStatus.put(position, true)
-            }
-            else {
-                switchStatus.put(position, false)
-            }
-
-            notifyItemChanged(position)
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(songs[position])
+        holder.binding.itemSongMoreIv.setOnClickListener{
+            myItemClickListener.onRemoveSong(songs[position].id)
+            removeSong(position)
         }
     }
 
-    override fun getItemCount(): Int = songDatas.size
+    override fun getItemCount(): Int = songs.size
 
-    interface MyItemClickListener{
-        fun onRemoveSong(position: Int)
+    @SuppressLint("NotifyDataSetChanged")
+    fun addSongs(songs: ArrayList<Song>) {
+        this.songs.clear()
+        this.songs.addAll(songs)
+
+        notifyDataSetChanged()
     }
 
-    private lateinit var mItemClickListener : MyItemClickListener
-
-    fun setMyItemClickListener(itemClickListener: MyItemClickListener){
-        this.mItemClickListener = itemClickListener
+    @SuppressLint("NotifyDataSetChanged")
+    private fun removeSong(position: Int){
+        songs.removeAt(position)
+        notifyDataSetChanged()
     }
 
-    inner class ViewHolder(val binding: ItemSongBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(song: Song) {
+    inner class ViewHolder(val binding: ItemSongBinding): RecyclerView.ViewHolder(binding.root){
+
+        fun bind(song : Song) {
             binding.itemSongTitleTv.text = song.title
             binding.itemSongSingerTv.text = song.singer
             binding.itemSongImgIv.setImageResource(song.coverImg!!)
+
+            binding.switchRV.isChecked = switchStatus[adapterPosition]
+            binding.switchRV.setOnClickListener{
+                if(!binding.switchRV.isChecked)
+                    switchStatus.put(adapterPosition, false)
+                else
+                    switchStatus.put(adapterPosition, true)
+                notifyItemChanged(adapterPosition)
+            }
         }
-
-
     }
 }

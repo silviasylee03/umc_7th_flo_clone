@@ -7,14 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import umc.com.mobile.umc_7th_flo.databinding.FragmentBannerBinding
 
-class BannerFragment(val imgRes : Int) : Fragment() {
+class BannerFragment(private val imgRes : Int) : Fragment() {
 
     lateinit var binding : FragmentBannerBinding
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
