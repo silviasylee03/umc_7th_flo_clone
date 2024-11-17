@@ -8,8 +8,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import umc.com.mobile.umc_7th_flo.databinding.FragmentAlbumBinding
 
 class AlbumFragment : Fragment() {
@@ -34,7 +38,18 @@ class AlbumFragment : Fragment() {
         val albumJson = arguments?.getString("album")
         val album = gson.fromJson(albumJson, Album::class.java)
 
+        lifecycleScope.launch {
+            val isLiked = isLikedAlbum(album.id)
+            if (isLiked) {
+                // 좋아요가 눌려진 상태
+                println("Album is liked.")
+            } else {
+                // 좋아요가 눌려지지 않은 상태
+                println("Album is not liked.")
+            }
+        }
         setInit(album)
+        setOnClickListener(album)
 
         binding.albumBackIv.setOnClickListener {
             (context as MainActivity).supportFragmentManager.beginTransaction()
@@ -76,4 +91,50 @@ class AlbumFragment : Fragment() {
         }
     }
 
+    private fun getJwt() : Int {
+        val spf = requireActivity().getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
+        return spf.getInt("jwt", 0)
+    }
+
+    private suspend fun likeAlbum(userId: Int, albumId: Int) {
+        withContext(Dispatchers.IO) {
+            val songDB = SongDatabase.getInstance(requireActivity())!!
+            val like = Like(userId, albumId)
+            songDB.albumDao().likeAlbum(like)
+        }
+    }
+
+    private suspend fun isLikedAlbum(albumId: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            val songDB = SongDatabase.getInstance(requireActivity())!!
+            val userId = getJwt()
+            val likeId: Int? = songDB.albumDao().isLikedAlbum(userId, albumId)
+            likeId != null
+        }
+    }
+
+    private suspend fun disLikeAlbum(albumId: Int) {
+        withContext(Dispatchers.IO) {
+            val songDB = SongDatabase.getInstance(requireActivity())!!
+            val userId = getJwt()
+            songDB.albumDao().disLikedAlbum(userId, albumId)
+        }
+    }
+
+    private fun setOnClickListener(album : Album) {
+        val userId = getJwt()
+        binding.albumLikeIv.setOnClickListener {
+            lifecycleScope.launch {
+                if (isLiked) {
+                    binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_off)
+                    disLikeAlbum(album.id)
+                } else {
+                    binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
+                    likeAlbum(userId, album.id)
+                }
+                isLiked = !isLiked
+            }
+        }
+
+    }
 }
