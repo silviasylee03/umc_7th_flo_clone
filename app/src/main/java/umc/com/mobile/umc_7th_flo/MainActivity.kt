@@ -12,7 +12,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import umc.com.mobile.umc_7th_flo.data.Album
+import umc.com.mobile.umc_7th_flo.data.SongDatabase
 import umc.com.mobile.umc_7th_flo.databinding.ActivityMainBinding
+import umc.com.mobile.umc_7th_flo.ui.home.HomeFragment
+import umc.com.mobile.umc_7th_flo.ui.locker.LockerFragment
+import umc.com.mobile.umc_7th_flo.ui.look.LookFragment
+import umc.com.mobile.umc_7th_flo.ui.search.SearchFragment
+import umc.com.mobile.umc_7th_flo.ui.song.Song
+import umc.com.mobile.umc_7th_flo.ui.song.SongActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -55,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             editor.putInt("songId", song.id)
             editor.apply()
 
-            val intent = Intent(this,SongActivity::class.java)
+            val intent = Intent(this, SongActivity::class.java)
 
 //            getResultText.launch(intent)
             startActivity(intent)
@@ -133,6 +141,12 @@ class MainActivity : AppCompatActivity() {
                 songDB.songDao().getSong(1)
             } else{
                 songDB.songDao().getSong(songId)
+            }
+
+            if (song == null) {
+                Log.e("onStart", "Song not found in the database for ID: $songId")
+                // Provide a fallback or default song
+                song = Song("Default Title", "Default Artist", 0, 0, 60, false, "default_music", false, 0)
             }
 
             Log.d("song ID", song.id.toString())
